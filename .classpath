@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/home/rocinante/Google Drive/Uptc/2017-I/Simulacion/Workspace-Proyectos/montecarlo/jars/vlcj-2.4.1.jar"/>
 	<classpathentry kind="lib" path="/home/rocinante/Google Drive/Uptc/2017-I/Simulacion/Workspace-Proyectos/montecarlo/jars/jna-3.5.1.jar"/>
-	<classpathentry kind="lib" path="/home/rocinante/Google Drive/Uptc/2017-I/Simulacion/Workspace-Proyectos/montecarlo/jars/commons-io-2.5/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="jars/commons-io-2.5/commons-io-2.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
