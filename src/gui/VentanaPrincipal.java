@@ -18,7 +18,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -40,7 +42,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener, MouseLis
 	private JMenu jMenuArchivo;
 	private JMenuItem jMenuItemAbrir;
 
-	private JPanel jPanelCenter, jPanelEast;
+	private JPanel jPanelCenter, jPanelNorth;
 
 	private JButton jButtonReproducir, jButtonPausar, jButtonParar, jButtonSilencio, jButtonCaptura;
 
@@ -49,6 +51,9 @@ public class VentanaPrincipal extends JFrame implements ActionListener, MouseLis
 	private JLabel jLabelLog;
 
 	private JTextField jTextFieldPuntos, jTextFieldTiempoDeMuestra;
+	
+	private JScrollPane jScrollPane;
+	private JTextArea jTextAreaConsola;
 
 	private EmbeddedMediaPlayerComponent embeddedMediaPlayerComponent;
 
@@ -145,26 +150,34 @@ public class VentanaPrincipal extends JFrame implements ActionListener, MouseLis
 		/* /Reproductor */
 
 		/* Reproductor clase */
-		this.analisis = new Analisis();
+		this.analisis = new Analisis(this);
 		/* /Reproductor clase */
 
 		/* Panel East */
-		this.jPanelEast = new JPanel(new BorderLayout());
+		this.jPanelNorth = new JPanel(new BorderLayout());
 		JPanel jPanelAuxiliar2 = new JPanel(new GridLayout(1, 4));
 		jPanelAuxiliar2.add(new JLabel("# puntos: ", JLabel.CENTER));
 		jPanelAuxiliar2.add(this.jTextFieldPuntos = new JTextField());
 		this.jTextFieldPuntos.setText(String.valueOf(this.analisis.getNumeroDePuntos()));
-		jPanelAuxiliar2.add(new JLabel("Intervalos (s): ", JLabel.CENTER));
+		jPanelAuxiliar2.add(new JLabel("Intervalos (ml): ", JLabel.CENTER));
 		jPanelAuxiliar2.add(this.jTextFieldTiempoDeMuestra = new JTextField());
-		this.jTextFieldTiempoDeMuestra.setText(String.valueOf(this.analisis.getTiempoEntreMuestra() / 1000));
+		this.jTextFieldTiempoDeMuestra.setText(String.valueOf(this.analisis.getTiempoEntreMuestra()));
 
 		/* Chochan los paneles */
-		this.jPanelEast.add(jPanelAuxiliar2, BorderLayout.NORTH);
-		this.add(this.jPanelEast, BorderLayout.NORTH);
-		/* /Panel East */
+		this.jPanelNorth.add(jPanelAuxiliar2, BorderLayout.NORTH);
+		this.add(this.jPanelNorth, BorderLayout.NORTH);
+		/* /Panel North */
+		
+		/* Panel east */
+		this.jTextAreaConsola = new JTextArea("========== Consola =========");
+		this.jScrollPane = new JScrollPane(this.jTextAreaConsola);
+		this.add(this.jScrollPane, BorderLayout.EAST);
+		/*/Panel east */
 
 		/* Hilo para controlar las capturas del video */
 		this.threadCapturas = new Thread(this);
+		
+		
 	}
 
 	private boolean abrir() {
@@ -187,7 +200,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener, MouseLis
 			this.setTitle(this.getTitle() + "//" + this.analisis.getFile().getName());
 
 			this.analisis.setNumeroDePuntos(Integer.parseInt(this.jTextFieldPuntos.getText()));
-			this.analisis.setTiempoEntreMuestra(Integer.parseInt(this.jTextFieldTiempoDeMuestra.getText()) * 1000);
+			this.analisis.setTiempoEntreMuestra(Integer.parseInt(this.jTextFieldTiempoDeMuestra.getText()));
 
 			this.threadCapturas.start();
 			
@@ -220,6 +233,11 @@ public class VentanaPrincipal extends JFrame implements ActionListener, MouseLis
 			String nuevoPath = this.analisis.getCapturasPath() + System.currentTimeMillis() + ".png";
 			if (this.embeddedMediaPlayerComponent.getMediaPlayer().saveSnapshot(new File(nuevoPath))) {
 				this.jLabelLog.setText("Captura guardada " + nuevoPath + " ");
+				this.analisis.getArrayListRoutes().add(nuevoPath);
+				if (this.analisis.isBanderaDetectar() == false) { 
+					this.analisis.setBanderaDetectar(true);
+					this.analisis.getThreadDetectarMovimiento().start();
+				}
 			} else {
 				this.jLabelLog.setText("No se puedo guardar captura ");
 			}
@@ -301,6 +319,170 @@ public class VentanaPrincipal extends JFrame implements ActionListener, MouseLis
 	public static void main(String[] args) {
 		VentanaPrincipal ventanaPrincipal = new VentanaPrincipal();
 		ventanaPrincipal.setVisible(true);
+	}
+
+	public JMenuBar getjMenuBar() {
+		return jMenuBar;
+	}
+
+	public void setjMenuBar(JMenuBar jMenuBar) {
+		this.jMenuBar = jMenuBar;
+	}
+
+	public JMenu getjMenuArchivo() {
+		return jMenuArchivo;
+	}
+
+	public void setjMenuArchivo(JMenu jMenuArchivo) {
+		this.jMenuArchivo = jMenuArchivo;
+	}
+
+	public JMenuItem getjMenuItemAbrir() {
+		return jMenuItemAbrir;
+	}
+
+	public void setjMenuItemAbrir(JMenuItem jMenuItemAbrir) {
+		this.jMenuItemAbrir = jMenuItemAbrir;
+	}
+
+	public JPanel getjPanelCenter() {
+		return jPanelCenter;
+	}
+
+	public void setjPanelCenter(JPanel jPanelCenter) {
+		this.jPanelCenter = jPanelCenter;
+	}
+
+	public JPanel getjPanelNorth() {
+		return jPanelNorth;
+	}
+
+	public void setjPanelNorth(JPanel jPanelNorth) {
+		this.jPanelNorth = jPanelNorth;
+	}
+
+	public JButton getjButtonReproducir() {
+		return jButtonReproducir;
+	}
+
+	public void setjButtonReproducir(JButton jButtonReproducir) {
+		this.jButtonReproducir = jButtonReproducir;
+	}
+
+	public JButton getjButtonPausar() {
+		return jButtonPausar;
+	}
+
+	public void setjButtonPausar(JButton jButtonPausar) {
+		this.jButtonPausar = jButtonPausar;
+	}
+
+	public JButton getjButtonParar() {
+		return jButtonParar;
+	}
+
+	public void setjButtonParar(JButton jButtonParar) {
+		this.jButtonParar = jButtonParar;
+	}
+
+	public JButton getjButtonSilencio() {
+		return jButtonSilencio;
+	}
+
+	public void setjButtonSilencio(JButton jButtonSilencio) {
+		this.jButtonSilencio = jButtonSilencio;
+	}
+
+	public JButton getjButtonCaptura() {
+		return jButtonCaptura;
+	}
+
+	public void setjButtonCaptura(JButton jButtonCaptura) {
+		this.jButtonCaptura = jButtonCaptura;
+	}
+
+	public JSlider getjSliderProgreso() {
+		return jSliderProgreso;
+	}
+
+	public void setjSliderProgreso(JSlider jSliderProgreso) {
+		this.jSliderProgreso = jSliderProgreso;
+	}
+
+	public JLabel getjLabelLog() {
+		return jLabelLog;
+	}
+
+	public void setjLabelLog(JLabel jLabelLog) {
+		this.jLabelLog = jLabelLog;
+	}
+
+	public JTextField getjTextFieldPuntos() {
+		return jTextFieldPuntos;
+	}
+
+	public void setjTextFieldPuntos(JTextField jTextFieldPuntos) {
+		this.jTextFieldPuntos = jTextFieldPuntos;
+	}
+
+	public JTextField getjTextFieldTiempoDeMuestra() {
+		return jTextFieldTiempoDeMuestra;
+	}
+
+	public void setjTextFieldTiempoDeMuestra(JTextField jTextFieldTiempoDeMuestra) {
+		this.jTextFieldTiempoDeMuestra = jTextFieldTiempoDeMuestra;
+	}
+
+	public JScrollPane getjScrollPane() {
+		return jScrollPane;
+	}
+
+	public void setjScrollPane(JScrollPane jScrollPane) {
+		this.jScrollPane = jScrollPane;
+	}
+
+	public JTextArea getjTextAreaConsola() {
+		return jTextAreaConsola;
+	}
+
+	public void setjTextAreaConsola(JTextArea jTextAreaConsola) {
+		this.jTextAreaConsola = jTextAreaConsola;
+	}
+
+	public EmbeddedMediaPlayerComponent getEmbeddedMediaPlayerComponent() {
+		return embeddedMediaPlayerComponent;
+	}
+
+	public void setEmbeddedMediaPlayerComponent(EmbeddedMediaPlayerComponent embeddedMediaPlayerComponent) {
+		this.embeddedMediaPlayerComponent = embeddedMediaPlayerComponent;
+	}
+
+	public Thread getThreadCapturas() {
+		return threadCapturas;
+	}
+
+	public void setThreadCapturas(Thread threadCapturas) {
+		this.threadCapturas = threadCapturas;
+	}
+
+	public Analisis getAnalisis() {
+		return analisis;
+	}
+
+	public void setAnalisis(Analisis analisis) {
+		this.analisis = analisis;
+	}
+
+	public boolean isBandera() {
+		return bandera;
+	}
+
+	public void setBandera(boolean bandera) {
+		this.bandera = bandera;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 }

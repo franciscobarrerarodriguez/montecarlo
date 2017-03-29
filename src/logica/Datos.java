@@ -7,6 +7,7 @@ public class Datos {
 	private int x;
 	private int y;
 	private Color color;
+	private boolean esIgual;
 
 	public Datos(int x, int y) {
 
@@ -36,6 +37,14 @@ public class Datos {
 
 	public void setColor(Color color) {
 		this.color = color;
+	}
+
+	public boolean isEsIgual() {
+		return esIgual;
+	}
+
+	public void setEsIgual(boolean esIgual) {
+		this.esIgual = esIgual;
 	}
 
 }
