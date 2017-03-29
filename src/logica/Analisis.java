@@ -7,11 +7,9 @@ import org.apache.commons.io.FileUtils;
 import gui.VentanaPrincipal;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -94,7 +92,7 @@ public class Analisis extends javax.swing.JFrame implements Runnable {
 	}
 
 	public void comparar(String ruta1, String ruta2) {
-		
+
 		InputStream inputStreamRuta1, inputStreamRuta2;
 
 		try {
@@ -121,23 +119,26 @@ public class Analisis extends javax.swing.JFrame implements Runnable {
 					contador++;
 				}
 			}
+			/**/
+			// System.out.println("Imagen 1: " + ruta1 + "\nImagen2: " + ruta2 +
+			// "\nCambiaron " + contador + " pixeles");
+			/**/
 			this.ventanaPrincipal.getjTextAreaConsola().setText(this.ventanaPrincipal.getjTextAreaConsola().getText()
 					+ "\nImagen 1: " + ruta1 + "\nImagen2: " + ruta2 + "\nCambiaron " + contador + "Pixeles\n");
-			
 
 		} catch (IOException e1) {
 			System.err.println(e1.getMessage());
 		}
-}
+	}
 
 	@Override
 	public void run() {
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e1) {
-			System.err.println(e1.getMessage());
-		}
 		while (this.banderaDetectar) {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e1) {
+				System.err.println(e1.getMessage());
+			}
 			if (this.arrayListRoutes.size() >= 2) {
 				this.comparar(this.arrayListRoutes.get(0), this.arrayListRoutes.get(1));
 
