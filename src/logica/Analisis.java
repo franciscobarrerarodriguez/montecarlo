@@ -7,12 +7,14 @@ import org.apache.commons.io.FileUtils;
 import gui.VentanaPrincipal;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
@@ -106,8 +108,8 @@ public class Analisis extends javax.swing.JFrame implements Runnable {
 
 			ArrayList<Datos> arrayListDatos = Montecarlo.cuadrado(bufferedImage1.getWidth(), bufferedImage1.getHeight(),
 					this.getNumeroDePuntos());
-
 			int contador = 0;
+
 			for (int i = 0; i < arrayListDatos.size(); i++) {
 
 				Color color1 = new Color(
@@ -117,18 +119,21 @@ public class Analisis extends javax.swing.JFrame implements Runnable {
 
 				if (!color1.equals(color2)) {
 					contador++;
+					bufferedImage1.setRGB(arrayListDatos.get(i).getX(), arrayListDatos.get(i).getY(), Color.CYAN.getRGB());
 				}
 			}
-			/**/
-			// System.out.println("Imagen 1: " + ruta1 + "\nImagen2: " + ruta2 +
-			// "\nCambiaron " + contador + " pixeles");
-			/**/
+			
+			 BufferedImage newImage = bufferedImage1;
+			 ImageIO.write(newImage, "png", new File(ruta1));
+
+		
 			this.ventanaPrincipal.getjTextAreaConsola().setText(this.ventanaPrincipal.getjTextAreaConsola().getText()
 					+ "\nImagen 1: " + ruta1 + "\nImagen2: " + ruta2 + "\nCambiaron " + contador + "Pixeles\n");
 
 		} catch (IOException e1) {
 			System.err.println(e1.getMessage());
 		}
+	
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import logica.Analisis;
+import logica.Constantes;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
@@ -129,6 +131,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener, MouseLis
 		/* /Progreso */
 		jPanelAuxiliar.add(jPanelControles);
 		jPanelAuxiliar.add(this.jLabelLog = new JLabel("Waiting ", JLabel.RIGHT));
+		this.jLabelLog.setForeground(Constantes.COLOR_DE_MOVIMIENTO);
 		this.jPanelCenter.add(jPanelAuxiliar, BorderLayout.SOUTH);
 
 		this.jPanelCenter.add(this.embeddedMediaPlayerComponent = new EmbeddedMediaPlayerComponent(),
